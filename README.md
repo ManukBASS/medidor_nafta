@@ -1,4 +1,4 @@
-# 🚗 Medidor de Nafta 🚗
+# Medidor de Nafta 🚗
 
 Este proyecto consiste en una aplicación de medición de nivel de nafta desarrollada con React y Typescript. La aplicación permite realizar un seguimiento del nivel de combustible en un vehículo y calcular su consumo en función de los kilómetros recorridos.
 
