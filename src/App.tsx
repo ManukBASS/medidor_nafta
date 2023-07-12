@@ -1,9 +1,6 @@
 import React, { useState, useEffect, CSSProperties } from "react";
 
 const App: React.FC = () => {
-
-  //STATES Y HANDLERS
-
   const [litrosTotales, setLitrosTotales] = useState<number[]>([]);
   const [kilometrajeInicial, setKilometrajeInicial] = useState<number | null>(
     null
@@ -13,6 +10,7 @@ const App: React.FC = () => {
   );
   const [litrosInput, setLitrosInput] = useState("");
   const [kilometrajeInicialInput, setKilometrajeInicialInput] = useState("");
+  const [datosCargados, setDatosCargados] = useState(false);
 
   const handleLitrosChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLitrosInput(event.target.value);
@@ -36,7 +34,7 @@ const App: React.FC = () => {
     const kilometraje = parseInt(kilometrajeInicialInput, 10);
     if (kilometraje) {
       setKilometrajeInicial(kilometraje);
-      setKilometrajeActual(kilometraje); 
+      setKilometrajeActual(kilometraje);
       setKilometrajeInicialInput("");
     }
   };
@@ -48,44 +46,51 @@ const App: React.FC = () => {
     setKilometrajeActual(kilometraje);
   };
 
+  // LOCAL STORAGE
 
-  //LOCAL STORAGE
-
-  const guardarDatosLocalStorage = () => {
-    localStorage.setItem("litrosTotales", JSON.stringify(litrosTotales));
-    localStorage.setItem("kilometrajeInicial", JSON.stringify(kilometrajeInicial));
-    localStorage.setItem("kilometrajeActual", JSON.stringify(kilometrajeActual));
-  };
-
-  const cargarDatosLocalStorage = () => {
+  useEffect(() => {
     const litrosTotalesStorage = localStorage.getItem("litrosTotales");
-    const kilometrajeInicialStorage = localStorage.getItem("kilometrajeInicial");
+    const kilometrajeInicialStorage = localStorage.getItem(
+      "kilometrajeInicial"
+    );
     const kilometrajeActualStorage = localStorage.getItem("kilometrajeActual");
-  
+
     if (litrosTotalesStorage) {
       setLitrosTotales(JSON.parse(litrosTotalesStorage));
     }
-  
+
     if (kilometrajeInicialStorage) {
       setKilometrajeInicial(JSON.parse(kilometrajeInicialStorage));
     }
-  
+
     if (kilometrajeActualStorage) {
       setKilometrajeActual(JSON.parse(kilometrajeActualStorage));
     }
-  };
+
+    setDatosCargados(true);
+  }, []);
 
   useEffect(() => {
-    cargarDatosLocalStorage();
-  }, []);
-  
+    if (datosCargados) {
+      localStorage.setItem("litrosTotales", JSON.stringify(litrosTotales));
+    }
+  }, [litrosTotales, datosCargados]);
+
   useEffect(() => {
-    guardarDatosLocalStorage();
-  }, [litrosTotales, kilometrajeInicial, kilometrajeActual]);
-  
+    if (datosCargados) {
+      localStorage.setItem(
+        "kilometrajeInicial",
+        JSON.stringify(kilometrajeInicial)
+      );
+      localStorage.setItem(
+        "kilometrajeActual",
+        JSON.stringify(kilometrajeActual)
+      );
+    }
+  }, [kilometrajeInicial, kilometrajeActual, datosCargados]);
 
   // CALCULOS
-  
+
   const calcularNivelNafta = (): number => {
     if (
       litrosTotales.length === 0 ||
@@ -267,19 +272,17 @@ const App: React.FC = () => {
             />
           </div>
         )}
-        {litrosTotales.length > 0 &&
-          kilometrajeInicial &&
-          kilometrajeActual && (
-            <div>
-              <h2>
-                Nivel de Nafta:{" "}
-                {(parseFloat(calcularNivelNafta().toFixed(1)) * 100).toFixed(0)}
-                %
-              </h2>
-              <p>Kilometraje Inicial: {kilometrajeInicial}</p>
-              <p>Kilometraje Actual: {kilometrajeActual}</p>
-            </div>
-          )}
+        {datosCargados && litrosTotales.length > 0 && kilometrajeInicial && kilometrajeActual && (
+          <div>
+            <h2>
+              Nivel de Nafta:{" "}
+              {(parseFloat(calcularNivelNafta().toFixed(1)) * 100).toFixed(0)}
+              %
+            </h2>
+            <p>Kilometraje Inicial: {kilometrajeInicial}</p>
+            <p>Kilometraje Actual: {kilometrajeActual}</p>
+          </div>
+        )}
         <div style={tanqueStyle}>
           <div style={nivelNaftaStyle}></div>
           <div style={indicadorStyle}></div>
