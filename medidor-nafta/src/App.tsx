@@ -145,7 +145,7 @@ const App: React.FC = () => {
         )}
         {litrosTotales.length > 0 && kilometrajeInicial && kilometrajeActual && (
           <div>
-            <h2>Nivel de Nafta: {calcularNivelNafta().toFixed(1) * 100}%</h2>
+            <h2>Nivel de Nafta: {(parseFloat(calcularNivelNafta().toFixed(1)) * 100).toFixed(0)}%</h2>
             <p>Kilometraje Inicial: {kilometrajeInicial}</p>
             <p>Kilometraje Actual: {kilometrajeActual}</p>
           </div>
